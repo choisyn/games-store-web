@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>社区 - 游戏社区商城</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --steam-dark-bg: #1b2838;
+            --steam-light-bg: #2a475e;
+            --steam-card-bg: #1e2837;
+            --steam-hover: #16202d;
+            --steam-blue: #66c0f4;
+            --steam-text: #c7d5e0;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1b2838 0%, #2a475e 100%);
+            color: var(--steam-text);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: var(--steam-dark-bg);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .navbar-brand {
+            color: var(--steam-blue) !important;
+            font-weight: bold;
+        }
+
+        .nav-link {
+            color: var(--steam-text) !important;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--steam-blue) !important;
+        }
+
+        .community-header {
+            background: var(--steam-card-bg);
+            padding: 2rem;
+            margin: 2rem 0;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .section-card {
+            background: var(--steam-card-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .section-card:hover {
+            background: var(--steam-hover);
+            border-color: var(--steam-blue);
+            transform: translateY(-5px);
+        }
+
+        .section-icon {
+            font-size: 2.5rem;
+            color: var(--steam-blue);
+            margin-bottom: 1rem;
+        }
+
+        .section-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-description {
+            color: #8f98a0;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .section-stats {
+            display: flex;
+            justify-content: space-around;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.2rem;
+            color: var(--steam-blue);
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #8f98a0;
+        }
+
+        /* 用户下拉菜单 */
+        .user-dropdown {
+            background: var(--steam-card-bg);
+            border: 1px solid var(--steam-light-bg);
+            border-radius: 8px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
+            min-width: 220px;
+            margin-top: 0.5rem;
+        }
+
+        .user-dropdown .dropdown-item {
+            color: var(--steam-text);
+            padding: 0.6rem 1.2rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-dropdown .dropdown-item:hover {
+            background: var(--steam-hover);
+            color: var(--steam-blue);
+        }
+
+        .user-dropdown .dropdown-item i {
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .user-dropdown .dropdown-divider {
+            border-color: var(--steam-light-bg);
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-controller"></i> 游戏社区商城
+            </a>
+            <div class="navbar-nav" id="navbarLinks">
+                <a class="nav-link" href="/">首页</a>
+                <a class="nav-link active" href="/community">社区</a>
+                <a class="nav-link" href="/login" id="loginLink">登录</a>
+                <a class="nav-link" href="/register" id="registerLink" style="display: none;">注册</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 社区标题 -->
+    <div class="container">
+        <div class="community-header">
+            <h1><i class="bi bi-people-fill"></i> 游戏社区</h1>
+            <p>分享你的游戏经验，结识志同道合的玩家</p>
+        </div>
+
+        <!-- 板块列表 -->
+        <div class="row" id="sectionsContainer">
+            <!-- 板块卡片将通过JavaScript动态加载 -->
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 加载板块列表
+        async function loadSections() {
+            try {
+                const response = await fetch('/api/community/sections');
+                const data = await response.json();
+
+                if (data.code === 200 && data.data) {
+                    const container = document.getElementById('sectionsContainer');
+                    
+                    // 添加"讨论广场"作为第一个板块
+                    let sectionsHTML = `
+                        <div class="col-md-4">
+                            <div class="section-card" onclick="goToForum()">
+                                <div class="text-center">
+                                    <i class="bi-chat-dots section-icon"></i>
+                                    <div class="section-name">讨论广场</div>
+                                    <div class="section-description">自由讨论游戏相关话题，分享游戏心得体会</div>
+                                </div>
+                                <div class="section-stats">
+                                    <div class="stat-item">
+                                        <div class="stat-value" id="forumPostCount">...</div>
+                                        <div class="stat-label">帖子</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-value">
+                                            <i class="bi bi-fire text-warning"></i>
+                                        </div>
+                                        <div class="stat-label">热度</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // 添加其他社区板块(过滤掉名为"讨论广场"的板块,避免重复)
+                    sectionsHTML += data.data
+                        .filter(section => section.name !== '讨论广场')
+                        .map(section => `
+                            <div class="col-md-4">
+                                <div class="section-card" onclick="goToSection(${section.id})">
+                                    <div class="text-center">
+                                        <i class="${section.icon || 'bi-chat-dots'} section-icon"></i>
+                                        <div class="section-name">${section.name}</div>
+                                        <div class="section-description">${section.description || ''}</div>
+                                    </div>
+                                    <div class="section-stats">
+                                        <div class="stat-item">
+                                            <div class="stat-value">${section.postCount || 0}</div>
+                                            <div class="stat-label">帖子</div>
+                                        </div>
+                                        <div class="stat-item">
+                                            <div class="stat-value">
+                                                <i class="bi bi-fire text-warning"></i>
+                                            </div>
+                                            <div class="stat-label">热度</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('');
+                    
+                    container.innerHTML = sectionsHTML;
+                    
+                    // 加载讨论广场的帖子数量
+                    loadForumPostCount();
+                }
+            } catch (error) {
+                console.error('加载板块失败:', error);
+            }
+        }
+
+        // 加载讨论广场帖子数量
+        async function loadForumPostCount() {
+            try {
+                const response = await fetch('/api/posts?page=0&size=1');
+                const data = await response.json();
+                if (data.code === 200 && data.data) {
+                    document.getElementById('forumPostCount').textContent = data.data.totalElements || 0;
+                }
+            } catch (error) {
+                console.error('加载讨论广场帖子数失败:', error);
+                document.getElementById('forumPostCount').textContent = '0';
+            }
+        }
+
+        // 跳转到讨论广场
+        function goToForum() {
+            window.location.href = '/forum.html';
+        }
+
+        // 跳转到社区板块(暂时禁用)
+        function goToSection(sectionId) {
+            alert('该板块页面正在开发中，敬请期待！\n\n您可以先访问"讨论广场"参与讨论。');
+            // window.location.href = `/community/section/${sectionId}`;
+        }
+
+        // 检查登录状态
+        async function checkLoginStatus() {
+            const token = getToken();
+            const navbarLinks = document.getElementById('navbarLinks');
+            const loginLink = document.getElementById('loginLink');
+            const registerLink = document.getElementById('registerLink');
+            
+            if (!token) {
+                console.log('未登录状态');
+                // 显示登录/注册链接
+                if (loginLink) loginLink.style.display = '';
+                if (registerLink) registerLink.style.display = '';
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/auth/current', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const result = await response.json();
+                
+                if (result.code === 200 && result.data) {
+                    console.log('✅ 已登录:', result.data.username);
+                    
+                    // 隐藏登录/注册链接
+                    if (loginLink) loginLink.style.display = 'none';
+                    if (registerLink) registerLink.style.display = 'none';
+                    
+                    // 添加用户信息(如果还没有添加)
+                    if (!document.getElementById('userInfo')) {
+                        const userInfo = document.createElement('div');
+                        userInfo.id = 'userInfo';
+                        userInfo.className = 'dropdown';
+                        userInfo.style.cssText = 'display: inline-block;';
+                        
+                        // 判断是否为管理员,动态生成菜单
+                        const isAdmin = result.data.role === 'ADMIN';
+                        const adminMenuItem = isAdmin ? `
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/admin"><i class="bi bi-gear-fill"></i> 管理系统</a></li>
+                        ` : '';
+                        
+                        userInfo.innerHTML = `
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle"></i> ${result.data.username}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end user-dropdown">
+                                <li><a class="dropdown-item" href="/profile"><i class="bi bi-person"></i> 个人主页</a></li>
+                                <li><a class="dropdown-item" href="/wishlist"><i class="bi bi-heart"></i> 愿望单</a></li>
+                                <li><a class="dropdown-item" href="/cart"><i class="bi bi-cart"></i> 购物车</a></li>
+                                <li><a class="dropdown-item" href="/wallet"><i class="bi bi-wallet2"></i> 钱包</a></li>
+                                <li><a class="dropdown-item" href="/messages"><i class="bi bi-envelope"></i> 消息</a></li>
+                                <li><a class="dropdown-item" href="/friends"><i class="bi bi-people"></i> 好友</a></li>
+                                ${adminMenuItem}
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#" onclick="logout(); return false;">
+                                    <i class="bi bi-box-arrow-right"></i> 退出登录
+                                </a></li>
+                            </ul>
+                        `;
+                        navbarLinks.appendChild(userInfo);
+                    }
+                } else {
+                    console.log('Token无效或已过期');
+                    // 显示登录/注册链接
+                    if (loginLink) loginLink.style.display = '';
+                    if (registerLink) registerLink.style.display = '';
+                }
+            } catch (error) {
+                console.error('检查登录状态失败:', error);
+                // 显示登录/注册链接
+                if (loginLink) loginLink.style.display = '';
+                if (registerLink) registerLink.style.display = '';
+            }
+        }
+        
+        // 获取Token
+        function getToken() {
+            // 优先从Cookie获取
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                const [name, value] = cookie.trim().split('=');
+                if (name === 'SESSION_TOKEN') {
+                    return value;
+                }
+            }
+            // 其次从localStorage获取
+            return localStorage.getItem('token');
+        }
+        
+        // 退出登录
+        async function logout() {
+            const token = getToken();
+            if (token) {
+                await fetch('/api/auth/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+            }
+            
+            // 清除Cookie
+            document.cookie = 'SESSION_TOKEN=; path=/; max-age=0';
+            localStorage.removeItem('token');
+            
+            // 跳转到首页
+            window.location.href = '/';
+        }
+
+        // 页面加载时执行
+        document.addEventListener('DOMContentLoaded', () => {
+            checkLoginStatus();
+            loadSections();
+        });
+    </script>
+</body>
+</html>
+

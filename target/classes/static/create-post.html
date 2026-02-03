@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>发布讨论 - 游戏社区</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 12px;
+            padding: 25px 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 28px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .form-container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+
+        .form-label-optional {
+            color: #999;
+            font-weight: 400;
+            font-size: 13px;
+            margin-left: 5px;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 300px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        .form-hint {
+            color: #999;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-cancel {
+            background: #f0f0f0;
+            color: #666;
+            padding: 12px 30px;
+        }
+
+        .btn-cancel:hover {
+            background: #e0e0e0;
+        }
+
+        .char-counter {
+            text-align: right;
+            color: #999;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .char-counter.warning {
+            color: #ff9800;
+        }
+
+        .char-counter.error {
+            color: #f44336;
+        }
+
+        .preview-section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .preview-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .preview-content {
+            color: #666;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .toolbar-btn {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+
+        .toolbar-btn:hover {
+            background: #e9ecef;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <h1>✍️ 发布讨论</h1>
+            <a href="forum.html" class="btn btn-secondary">返回广场</a>
+        </div>
+
+        <!-- 表单 -->
+        <div class="form-container">
+            <form id="postForm">
+                <!-- 标题 -->
+                <div class="form-group">
+                    <label class="form-label">标题</label>
+                    <input type="text" class="form-input" id="titleInput" 
+                           placeholder="请输入讨论标题（5-200字）" 
+                           maxlength="200" required>
+                    <div class="char-counter" id="titleCounter">0/200</div>
+                </div>
+
+                <!-- 关联游戏 -->
+                <div class="form-group">
+                    <label class="form-label">
+                        关联游戏
+                        <span class="form-label-optional">（可选）</span>
+                    </label>
+                    <select class="form-select" id="gameSelect">
+                        <option value="">无关联（综合讨论）</option>
+                    </select>
+                    <div class="form-hint">选择相关游戏可以让更多玩家看到您的讨论</div>
+                </div>
+
+                <!-- 分类 -->
+                <div class="form-group">
+                    <label class="form-label">
+                        讨论分类
+                        <span class="form-label-optional">（可选）</span>
+                    </label>
+                    <select class="form-select" id="categorySelect">
+                        <option value="">无分类</option>
+                        <option value="攻略">攻略</option>
+                        <option value="评测">评测</option>
+                        <option value="问答">问答</option>
+                        <option value="交流">交流</option>
+                        <option value="求助">求助</option>
+                        <option value="建议">建议</option>
+                        <option value="其他">其他</option>
+                    </select>
+                </div>
+
+                <!-- 内容 -->
+                <div class="form-group">
+                    <label class="form-label">内容</label>
+                    <div class="toolbar">
+                        <button type="button" class="toolbar-btn" onclick="insertText('**粗体**')">B</button>
+                        <button type="button" class="toolbar-btn" onclick="insertText('*斜体*')">I</button>
+                        <button type="button" class="toolbar-btn" onclick="insertText('`代码`')">Code</button>
+                        <button type="button" class="toolbar-btn" onclick="togglePreview()">预览</button>
+                    </div>
+                    <textarea class="form-textarea" id="contentInput" 
+                              placeholder="请输入讨论内容，支持Markdown格式...&#10;&#10;示例：&#10;**粗体文本**&#10;*斜体文本*&#10;`代码`&#10;- 列表项" 
+                              required></textarea>
+                    <div class="char-counter" id="contentCounter">0字</div>
+                    
+                    <!-- 预览区域 -->
+                    <div class="preview-section" id="previewSection">
+                        <div class="preview-title">内容预览</div>
+                        <div class="preview-content" id="previewContent"></div>
+                    </div>
+                </div>
+
+                <!-- 操作按钮 -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-cancel" onclick="cancelPost()">取消</button>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">发布讨论</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8080/api';
+        let previewVisible = false;
+
+        // 页面加载时初始化
+        window.onload = function() {
+            checkLogin();
+            loadGames();
+            setupCharCounters();
+        };
+
+        // 检查登录状态
+        function checkLogin() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('请先登录！');
+                window.location.href = 'index.html';
+                return;
+            }
+        }
+
+        // 加载游戏列表
+        async function loadGames() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/games?page=0&size=100`);
+                const result = await response.json();
+                
+                if (result.success && result.data) {
+                    const gameSelect = document.getElementById('gameSelect');
+                    result.data.content.forEach(game => {
+                        const option = document.createElement('option');
+                        option.value = game.id;
+                        option.textContent = game.name;
+                        gameSelect.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('加载游戏列表失败:', error);
+            }
+        }
+
+        // 设置字符计数器
+        function setupCharCounters() {
+            const titleInput = document.getElementById('titleInput');
+            const contentInput = document.getElementById('contentInput');
+            const titleCounter = document.getElementById('titleCounter');
+            const contentCounter = document.getElementById('contentCounter');
+
+            titleInput.addEventListener('input', function() {
+                const length = this.value.length;
+                titleCounter.textContent = `${length}/200`;
+                
+                if (length > 180) {
+                    titleCounter.classList.add('warning');
+                } else {
+                    titleCounter.classList.remove('warning');
+                }
+                
+                if (length === 200) {
+                    titleCounter.classList.add('error');
+                } else {
+                    titleCounter.classList.remove('error');
+                }
+            });
+
+            contentInput.addEventListener('input', function() {
+                const length = this.value.length;
+                contentCounter.textContent = `${length}字`;
+            });
+        }
+
+        // 表单提交
+        document.getElementById('postForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('titleInput').value.trim();
+            const content = document.getElementById('contentInput').value.trim();
+            const gameId = document.getElementById('gameSelect').value || null;
+            const category = document.getElementById('categorySelect').value || null;
+
+            // 验证
+            if (title.length < 5) {
+                alert('标题至少需要5个字符');
+                return;
+            }
+
+            if (content.length < 10) {
+                alert('内容至少需要10个字符');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = '发布中...';
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE_URL}/posts`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        title: title,
+                        content: content,
+                        gameId: gameId ? parseInt(gameId) : null,
+                        category: category
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('发布成功！');
+                    window.location.href = `post-detail.html?id=${result.data.id}`;
+                } else {
+                    alert(result.message || '发布失败，请重试');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '发布讨论';
+                }
+            } catch (error) {
+                console.error('发布失败:', error);
+                alert('发布失败，请检查网络连接');
+                submitBtn.disabled = false;
+                submitBtn.textContent = '发布讨论';
+            }
+        });
+
+        // 取消发布
+        function cancelPost() {
+            if (confirm('确定要取消吗？未保存的内容将丢失')) {
+                window.location.href = 'forum.html';
+            }
+        }
+
+        // 插入文本
+        function insertText(text) {
+            const contentInput = document.getElementById('contentInput');
+            const start = contentInput.selectionStart;
+            const end = contentInput.selectionEnd;
+            const value = contentInput.value;
+            
+            contentInput.value = value.substring(0, start) + text + value.substring(end);
+            contentInput.focus();
+            contentInput.setSelectionRange(start + text.length, start + text.length);
+            
+            // 触发input事件以更新计数器
+            contentInput.dispatchEvent(new Event('input'));
+        }
+
+        // 切换预览
+        function togglePreview() {
+            const previewSection = document.getElementById('previewSection');
+            const previewContent = document.getElementById('previewContent');
+            const contentInput = document.getElementById('contentInput');
+            
+            previewVisible = !previewVisible;
+            
+            if (previewVisible) {
+                previewContent.textContent = contentInput.value || '（空内容）';
+                previewSection.style.display = 'block';
+            } else {
+                previewSection.style.display = 'none';
+            }
+        }
+
+        // 防止意外关闭
+        window.addEventListener('beforeunload', function(e) {
+            const title = document.getElementById('titleInput').value.trim();
+            const content = document.getElementById('contentInput').value.trim();
+            
+            if (title || content) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+    </script>
+</body>
+</html>
+

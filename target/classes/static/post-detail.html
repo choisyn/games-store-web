@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>讨论详情 - 游戏社区</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --steam-dark-bg: #1b2838;
+            --steam-light-bg: #2a475e;
+            --steam-card-bg: #1e2837;
+            --steam-hover: #16202d;
+            --steam-blue: #66c0f4;
+            --steam-text: #c7d5e0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #1b2838 0%, #2a475e 100%);
+            color: var(--steam-text);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: var(--steam-card-bg);
+            border-radius: 8px;
+            padding: 25px 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-secondary {
+            background: var(--steam-light-bg);
+            color: var(--steam-text);
+        }
+
+        .btn-secondary:hover {
+            background: var(--steam-hover);
+        }
+
+        .btn-danger {
+            background: #f5576c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #e84855;
+        }
+
+        .btn-primary {
+            background: var(--steam-blue);
+            color: #1b2838;
+        }
+
+        .btn-primary:hover {
+            background: #4db8e8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 192, 244, 0.4);
+        }
+
+        .post-container {
+            background: var(--steam-card-bg);
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .post-badges {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge-pinned {
+            background: #f5576c;
+            color: white;
+        }
+
+        .badge-featured {
+            background: #ffd93d;
+            color: #1b2838;
+        }
+
+        .badge-game {
+            background: var(--steam-blue);
+            color: #1b2838;
+        }
+
+        .badge-category {
+            background: var(--steam-light-bg);
+            color: var(--steam-text);
+        }
+
+        .post-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .post-meta {
+            display: flex;
+            gap: 20px;
+            color: #8f98a0;
+            font-size: 14px;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            flex-wrap: wrap;
+        }
+
+        .post-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .author-name {
+            color: var(--steam-blue);
+            font-weight: 600;
+        }
+
+        .post-content {
+            color: var(--steam-text);
+            font-size: 16px;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 15px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .comments-section {
+            background: var(--steam-card-bg);
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .comments-header {
+            font-size: 20px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .comment-form {
+            background: var(--steam-hover);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .comment-textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--steam-light-bg);
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+            background: var(--steam-dark-bg);
+            color: var(--steam-text);
+            resize: vertical;
+            min-height: 100px;
+            margin-bottom: 10px;
+        }
+
+        .comment-textarea:focus {
+            outline: none;
+            border-color: var(--steam-blue);
+            box-shadow: 0 0 0 3px rgba(102, 192, 244, 0.1);
+        }
+
+        .comment-actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .comment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .comment-item {
+            border-left: 3px solid var(--steam-blue);
+            padding: 15px 20px;
+            background: var(--steam-hover);
+            border-radius: 4px;
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            color: var(--steam-blue);
+        }
+
+        .comment-time {
+            color: #8f98a0;
+            font-size: 13px;
+        }
+
+        .comment-content {
+            color: var(--steam-text);
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .comment-footer {
+            display: flex;
+            gap: 15px;
+            font-size: 13px;
+        }
+
+        .comment-action {
+            color: #8f98a0;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .comment-action:hover {
+            color: var(--steam-blue);
+        }
+
+        .reply-form {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: none;
+        }
+
+        .reply-item {
+            margin-left: 30px;
+            margin-top: 15px;
+            border-left: 2px solid rgba(255, 255, 255, 0.1);
+            padding-left: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--steam-text);
+        }
+
+        .empty {
+            text-align: center;
+            padding: 40px;
+            color: var(--steam-text);
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .post-title {
+                font-size: 22px;
+            }
+
+            .post-meta {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .reply-item {
+                margin-left: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <a href="forum.html" class="btn btn-secondary">← 返回广场</a>
+            <div id="postActions"></div>
+        </div>
+
+        <!-- 帖子内容 -->
+        <div class="post-container" id="postContainer">
+            <div class="loading">加载中...</div>
+        </div>
+
+        <!-- 评论区 -->
+        <div class="comments-section">
+            <div class="comments-header">
+                💬 评论 <span id="commentCount">(0)</span>
+            </div>
+
+            <!-- 发表评论表单 -->
+            <div class="comment-form" id="commentForm" style="display: none;">
+                <textarea class="comment-textarea" id="commentInput" 
+                          placeholder="发表你的看法..." 
+                          maxlength="1000"></textarea>
+                <div class="comment-actions">
+                    <button class="btn btn-primary" onclick="submitComment()">发表评论</button>
+                </div>
+            </div>
+
+            <div id="loginHint" style="display: none; text-align: center; padding: 20px; color: #999;">
+                <p>请<a href="index.html" style="color: #667eea;">登录</a>后发表评论</p>
+            </div>
+
+            <!-- 评论列表 -->
+            <div class="comment-list" id="commentList">
+                <div class="loading">加载评论中...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8080/api';
+        let postId = null;
+        let currentUserId = null;
+
+        // 页面加载时初始化
+        window.onload = function() {
+            postId = getQueryParam('id');
+            if (!postId) {
+                alert('帖子不存在');
+                window.location.href = 'forum.html';
+                return;
+            }
+
+            checkLogin();
+            loadPost();
+            loadComments();
+        };
+
+        // 获取URL参数
+        function getQueryParam(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // 检查登录状态
+        async function checkLogin() {
+            const token = getToken();
+            const commentForm = document.getElementById('commentForm');
+            const loginHint = document.getElementById('loginHint');
+
+            if (token) {
+                // 从API获取当前用户信息
+                try {
+                    const response = await fetch(`${API_BASE_URL}/auth/current`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    const result = await response.json();
+                    
+                    if (result.code === 200 && result.data) {
+                        currentUserId = result.data.userId;
+                        commentForm.style.display = 'block';
+                        loginHint.style.display = 'none';
+                        console.log('登录状态已确认, 用户ID:', currentUserId);
+                    } else {
+                        // Token无效或过期
+                        console.warn('Token无效:', result.message);
+                        commentForm.style.display = 'none';
+                        loginHint.style.display = 'block';
+                    }
+                } catch (e) {
+                    console.error('获取用户信息失败', e);
+                    commentForm.style.display = 'none';
+                    loginHint.style.display = 'block';
+                }
+            } else {
+                console.log('未找到token');
+                commentForm.style.display = 'none';
+                loginHint.style.display = 'block';
+            }
+        }
+
+        // 获取Token
+        function getToken() {
+            // 优先从Cookie获取
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                const [name, value] = cookie.trim().split('=');
+                if (name === 'SESSION_TOKEN') {
+                    return value;
+                }
+            }
+            // 其次从localStorage获取
+            return localStorage.getItem('token');
+        }
+
+        // 加载帖子详情
+        async function loadPost() {
+            const container = document.getElementById('postContainer');
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/posts/${postId}`);
+                const result = await response.json();
+
+                if (result.code === 200 && result.data) {
+                    renderPost(result.data);
+                } else {
+                    console.error('API返回错误:', result);
+                    container.innerHTML = '<div class="empty">加载失败</div>';
+                }
+            } catch (error) {
+                console.error('加载帖子失败:', error);
+                container.innerHTML = '<div class="empty">加载失败，请稍后重试</div>';
+            }
+        }
+
+        // 渲染帖子
+        function renderPost(post) {
+            const container = document.getElementById('postContainer');
+            const badges = [];
+            
+            if (post.isPinned) badges.push('<span class="badge badge-pinned">置顶</span>');
+            if (post.isFeatured) badges.push('<span class="badge badge-featured">精华</span>');
+            if (post.gameName) badges.push(`<span class="badge badge-game">${escapeHtml(post.gameName)}</span>`);
+            if (post.category) badges.push(`<span class="badge badge-category">${escapeHtml(post.category)}</span>`);
+
+            container.innerHTML = `
+                <div class="post-badges">
+                    ${badges.join('')}
+                </div>
+                <h1 class="post-title">${escapeHtml(post.title)}</h1>
+                <div class="post-meta">
+                    <span class="post-meta-item">
+                        <span>作者：</span>
+                        <span class="author-name">${escapeHtml(post.username || '匿名用户')}</span>
+                    </span>
+                    <span class="post-meta-item">👁️ ${post.viewCount || 0} 浏览</span>
+                    <span class="post-meta-item">💬 ${post.commentCount || 0} 评论</span>
+                    <span class="post-meta-item">👍 ${post.likeCount || 0} 点赞</span>
+                    <span class="post-meta-item">🕐 ${formatTime(post.createdAt)}</span>
+                </div>
+                <div class="post-content">${escapeHtml(post.content)}</div>
+            `;
+
+            // 如果是作者，显示删除按钮
+            if (currentUserId && currentUserId === post.userId) {
+                document.getElementById('postActions').innerHTML = `
+                    <button class="btn btn-danger" onclick="deletePost()">删除帖子</button>
+                `;
+            }
+        }
+
+        // 加载评论列表
+        async function loadComments() {
+            const commentList = document.getElementById('commentList');
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/posts/${postId}/comments?page=0&size=100`);
+                const result = await response.json();
+
+                if (result.code === 200 && result.data) {
+                    const comments = result.data.content || result.data;
+                    const count = result.data.totalElements || (Array.isArray(comments) ? comments.length : 0);
+                    
+                    document.getElementById('commentCount').textContent = `(${count})`;
+
+                    if (!Array.isArray(comments) || comments.length === 0) {
+                        commentList.innerHTML = '<div class="empty">暂无评论，快来发表第一条吧！</div>';
+                    } else {
+                        commentList.innerHTML = comments.map(comment => renderComment(comment)).join('');
+                    }
+                } else {
+                    console.error('API返回错误:', result);
+                    commentList.innerHTML = '<div class="empty">加载评论失败</div>';
+                }
+            } catch (error) {
+                console.error('加载评论失败:', error);
+                commentList.innerHTML = '<div class="empty">加载评论失败</div>';
+            }
+        }
+
+        // 渲染评论
+        function renderComment(comment) {
+            const replies = comment.replies && comment.replies.length > 0
+                ? comment.replies.map(reply => `
+                    <div class="reply-item">
+                        <div class="comment-header">
+                            <span class="comment-author">${escapeHtml(reply.username || '匿名用户')}</span>
+                            <span class="comment-time">${formatTime(reply.createdAt)}</span>
+                        </div>
+                        <div class="comment-content">${escapeHtml(reply.content)}</div>
+                    </div>
+                  `).join('')
+                : '';
+
+            const deleteBtn = currentUserId && currentUserId === comment.userId
+                ? `<span class="comment-action" onclick="deleteComment(${comment.id})">删除</span>`
+                : '';
+
+            return `
+                <div class="comment-item">
+                    <div class="comment-header">
+                        <span class="comment-author">${escapeHtml(comment.username || '匿名用户')}</span>
+                        <span class="comment-time">${formatTime(comment.createdAt)}</span>
+                    </div>
+                    <div class="comment-content">${escapeHtml(comment.content)}</div>
+                    <div class="comment-footer">
+                        <span class="comment-action">👍 ${comment.likeCount || 0}</span>
+                        ${deleteBtn}
+                    </div>
+                    ${replies}
+                </div>
+            `;
+        }
+
+        // 提交评论
+        async function submitComment() {
+            const content = document.getElementById('commentInput').value.trim();
+            
+            if (!content) {
+                alert('请输入评论内容');
+                return;
+            }
+
+            if (content.length < 2) {
+                alert('评论内容至少需要2个字符');
+                return;
+            }
+
+            try {
+                const token = getToken();
+                const response = await fetch(`${API_BASE_URL}/comments`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        postId: parseInt(postId),
+                        content: content
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.code === 200) {
+                    document.getElementById('commentInput').value = '';
+                    loadComments();
+                    loadPost(); // 刷新帖子以更新评论数
+                    alert('评论成功！');
+                } else {
+                    alert(result.message || '评论失败，请重试');
+                }
+            } catch (error) {
+                console.error('评论失败:', error);
+                alert('评论失败，请检查网络连接');
+            }
+        }
+
+        // 删除帖子
+        async function deletePost() {
+            if (!confirm('确定要删除这个帖子吗？此操作不可恢复！')) {
+                return;
+            }
+
+            try {
+                const token = getToken();
+                const response = await fetch(`${API_BASE_URL}/posts/${postId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.code === 200) {
+                    alert('删除成功！');
+                    window.location.href = 'forum.html';
+                } else {
+                    alert(result.message || '删除失败');
+                }
+            } catch (error) {
+                console.error('删除失败:', error);
+                alert('删除失败，请检查网络连接');
+            }
+        }
+
+        // 删除评论
+        async function deleteComment(commentId) {
+            if (!confirm('确定要删除这条评论吗？')) {
+                return;
+            }
+
+            try {
+                const token = getToken();
+                const response = await fetch(`${API_BASE_URL}/comments/${commentId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.code === 200) {
+                    loadComments();
+                    loadPost(); // 刷新帖子以更新评论数
+                } else {
+                    alert(result.message || '删除失败');
+                }
+            } catch (error) {
+                console.error('删除失败:', error);
+                alert('删除失败，请检查网络连接');
+            }
+        }
+
+        // 格式化时间
+        function formatTime(dateString) {
+            if (!dateString) return '';
+            
+            const date = new Date(dateString);
+            const now = new Date();
+            const diff = now - date;
+            
+            const minute = 60 * 1000;
+            const hour = 60 * minute;
+            const day = 24 * hour;
+            
+            if (diff < minute) {
+                return '刚刚';
+            } else if (diff < hour) {
+                return Math.floor(diff / minute) + '分钟前';
+            } else if (diff < day) {
+                return Math.floor(diff / hour) + '小时前';
+            } else if (diff < 7 * day) {
+                return Math.floor(diff / day) + '天前';
+            } else {
+                return date.toLocaleString('zh-CN');
+            }
+        }
+
+        // HTML转义
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // 评论框回车提交（Ctrl+Enter）
+        document.getElementById('commentInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                submitComment();
+            }
+        });
+    </script>
+</body>
+</html>
+

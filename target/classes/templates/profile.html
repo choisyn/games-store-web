@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人中心 - 游戏社区商城</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --steam-dark-bg: #1b2838;
+            --steam-light-bg: #2a475e;
+            --steam-card-bg: #1e2837;
+            --steam-hover: #16202d;
+            --steam-blue: #66c0f4;
+            --steam-text: #c7d5e0;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1b2838 0%, #2a475e 100%);
+            color: var(--steam-text);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: var(--steam-dark-bg);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .navbar-brand {
+            color: var(--steam-blue) !important;
+            font-weight: bold;
+        }
+
+        .nav-link {
+            color: var(--steam-text) !important;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--steam-blue) !important;
+        }
+
+        .profile-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .profile-header {
+            background: var(--steam-card-bg);
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: var(--steam-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: var(--steam-dark-bg);
+        }
+
+        .profile-info h2 {
+            color: var(--steam-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .badge-role {
+            background: var(--steam-blue);
+            color: var(--steam-dark-bg);
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+        }
+
+        .profile-section {
+            background: var(--steam-card-bg);
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            color: var(--steam-blue);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid rgba(102, 192, 244, 0.3);
+        }
+
+        .form-control {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--steam-text);
+        }
+
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--steam-blue);
+            color: var(--steam-text);
+        }
+
+        .btn-primary {
+            background: var(--steam-blue);
+            border: none;
+            color: var(--steam-dark-bg);
+        }
+
+        .btn-primary:hover {
+            background: #5ab0e6;
+        }
+
+        .btn-danger {
+            background: #f44336;
+            border: none;
+        }
+
+        .btn-danger:hover {
+            background: #da190b;
+        }
+
+        .stat-card {
+            background: var(--steam-hover);
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            color: var(--steam-blue);
+            font-weight: bold;
+        }
+
+        .stat-label {
+            color: #8f98a0;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-controller"></i> 游戏社区商城
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/">首页</a>
+                <a class="nav-link" href="/community">社区</a>
+                <a class="nav-link active" href="/profile">个人中心</a>
+                <a class="nav-link" href="#" onclick="logout()">退出登录</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="profile-container">
+        <!-- 个人信息头部 -->
+        <div class="profile-header">
+            <div class="avatar">
+                <i class="bi bi-person-circle"></i>
+            </div>
+            <div class="profile-info">
+                <h2 id="username">加载中...</h2>
+                <p class="text-muted mb-2" id="email">-</p>
+                <span class="badge-role" id="role">-</span>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- 左侧：统计信息 -->
+            <div class="col-md-4">
+                <div class="profile-section">
+                    <h5 class="section-title">我的数据</h5>
+                    <div class="stat-card mb-3">
+                        <div class="stat-value" id="postCount">0</div>
+                        <div class="stat-label">发布的帖子</div>
+                    </div>
+                    <div class="stat-card mb-3">
+                        <div class="stat-value" id="commentCount">0</div>
+                        <div class="stat-label">发布的评论</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="favoriteCount">0</div>
+                        <div class="stat-label">收藏的帖子</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧：修改信息 -->
+            <div class="col-md-8">
+                <div class="profile-section">
+                    <h5 class="section-title">修改个人信息</h5>
+                    <form id="updateProfileForm">
+                        <div class="mb-3">
+                            <label class="form-label">用户名</label>
+                            <input type="text" class="form-control" id="updateUsername" readonly>
+                            <small class="text-muted">用户名不可修改</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">邮箱</label>
+                            <input type="email" class="form-control" id="updateEmail">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> 保存修改
+                        </button>
+                    </form>
+                </div>
+
+                <div class="profile-section">
+                    <h5 class="section-title">修改密码</h5>
+                    <form id="changePasswordForm">
+                        <div class="mb-3">
+                            <label class="form-label">当前密码</label>
+                            <input type="password" class="form-control" id="currentPassword" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">新密码</label>
+                            <input type="password" class="form-control" id="newPassword" required minlength="6">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">确认新密码</label>
+                            <input type="password" class="form-control" id="confirmNewPassword" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-shield-lock"></i> 修改密码
+                        </button>
+                    </form>
+                </div>
+
+                <div class="profile-section">
+                    <h5 class="section-title text-danger">危险操作</h5>
+                    <button class="btn btn-danger" onclick="logout()">
+                        <i class="bi bi-box-arrow-right"></i> 退出登录
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+
+        // 页面加载时获取用户信息
+        async function loadUserProfile() {
+            try {
+                const response = await fetch('/api/auth/current');
+                const data = await response.json();
+
+                if (data.code === 200) {
+                    currentUser = data.data;
+                    document.getElementById('username').textContent = currentUser.username;
+                    document.getElementById('email').textContent = currentUser.email;
+                    document.getElementById('role').textContent = currentUser.role === 'ADMIN' ? '管理员' : '普通用户';
+                    document.getElementById('updateUsername').value = currentUser.username;
+                    document.getElementById('updateEmail').value = currentUser.email;
+                } else {
+                    // 未登录，跳转到登录页
+                    window.location.href = '/login';
+                }
+            } catch (error) {
+                console.error('获取用户信息失败:', error);
+                window.location.href = '/login';
+            }
+        }
+
+        // 退出登录
+        async function logout() {
+            try {
+                await fetch('/api/auth/logout', { method: 'POST' });
+                window.location.href = '/login';
+            } catch (error) {
+                console.error('退出登录失败:', error);
+            }
+        }
+
+        // 页面加载时执行
+        document.addEventListener('DOMContentLoaded', loadUserProfile);
+
+        // 修改个人信息表单提交
+        document.getElementById('updateProfileForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            alert('功能开发中...');
+        });
+
+        // 修改密码表单提交
+        document.getElementById('changePasswordForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            alert('功能开发中...');
+        });
+    </script>
+</body>
+</html>
+

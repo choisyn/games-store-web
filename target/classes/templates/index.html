@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>游戏社区商城 - 发现精彩游戏</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --steam-dark-bg: #1b2838;
+            --steam-light-bg: #2a475e;
+            --steam-card-bg: #1e2837;
+            --steam-hover: #16202d;
+            --steam-blue: #66c0f4;
+            --steam-green: #5cb85c;
+            --steam-text: #c7d5e0;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1b2838 0%, #2a475e 100%);
+            color: var(--steam-text);
+            font-family: 'Arial', 'Microsoft YaHei', sans-serif;
+            min-height: 100vh;
+        }
+
+        /* 导航栏 */
+        .navbar {
+            background: var(--steam-dark-bg);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            padding: 1rem 0;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--steam-blue) !important;
+        }
+
+        .nav-link {
+            color: var(--steam-text) !important;
+            margin: 0 0.5rem;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover {
+            color: var(--steam-blue) !important;
+        }
+
+        /* 社区下拉菜单 */
+        .community-dropdown {
+            background: var(--steam-card-bg);
+            border: 1px solid var(--steam-light-bg);
+            border-radius: 8px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
+            min-width: 250px;
+            margin-top: 0.5rem;
+        }
+
+        .community-dropdown .dropdown-item {
+            color: var(--steam-text);
+            padding: 0.6rem 1.2rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .community-dropdown .dropdown-item:hover {
+            background: var(--steam-hover);
+            color: var(--steam-blue);
+        }
+
+        .community-dropdown .dropdown-item i {
+            font-size: 1.1rem;
+        }
+
+        .community-dropdown .dropdown-divider {
+            border-color: var(--steam-light-bg);
+            opacity: 0.5;
+        }
+
+        .community-dropdown .dropdown-item-text {
+            padding: 0.4rem 1.2rem;
+        }
+
+        /* 用户下拉菜单 */
+        .user-dropdown {
+            background: var(--steam-card-bg);
+            border: 1px solid var(--steam-light-bg);
+            border-radius: 8px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
+            min-width: 220px;
+            margin-top: 0.5rem;
+        }
+
+        .user-dropdown .dropdown-item {
+            color: var(--steam-text);
+            padding: 0.6rem 1.2rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-dropdown .dropdown-item:hover {
+            background: var(--steam-hover);
+            color: var(--steam-blue);
+        }
+
+        .user-dropdown .dropdown-item i {
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .user-dropdown .dropdown-divider {
+            border-color: var(--steam-light-bg);
+            opacity: 0.5;
+        }
+
+        /* 轮播大图 */
+        .hero-carousel {
+            margin: 2rem 0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
+        }
+
+        .carousel-item {
+            height: 500px;
+            position: relative;
+        }
+
+        .carousel-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .carousel-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
+            padding: 2rem;
+        }
+
+        .carousel-overlay h2 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+
+        .carousel-overlay p {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: #c7d5e0;
+        }
+
+        .carousel-price {
+            display: inline-block;
+            background: var(--steam-green);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 4px;
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+
+        /* 分类标签 */
+        .category-tabs {
+            margin: 3rem 0 2rem 0;
+            border-bottom: 2px solid var(--steam-light-bg);
+        }
+
+        .category-tabs .nav-link {
+            color: var(--steam-text);
+            border: none;
+            border-bottom: 3px solid transparent;
+            padding: 1rem 1.5rem;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+        }
+
+        .category-tabs .nav-link:hover {
+            background: var(--steam-hover);
+            border-bottom-color: var(--steam-blue);
+        }
+
+        .category-tabs .nav-link.active {
+            background: var(--steam-card-bg);
+            border-bottom-color: var(--steam-blue);
+            color: white;
+        }
+
+        /* 游戏卡片网格 */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .game-card {
+            background: var(--steam-card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .game-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+        }
+
+        .game-card-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-bottom: 2px solid var(--steam-light-bg);
+        }
+
+        .game-card-body {
+            padding: 1rem;
+        }
+
+        .game-card-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 0.5rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .game-card-description {
+            font-size: 0.9rem;
+            color: var(--steam-text);
+            margin-bottom: 1rem;
+            height: 3em;
+            overflow: hidden;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .game-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 0.5rem;
+            border-top: 1px solid var(--steam-light-bg);
+        }
+
+        .game-tags {
+            display: flex;
+            gap: 0.3rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.5rem;
+        }
+
+        .game-tag {
+            background: var(--steam-light-bg);
+            color: var(--steam-blue);
+            padding: 0.2rem 0.6rem;
+            border-radius: 3px;
+            font-size: 0.75rem;
+        }
+
+        .game-rating {
+            color: #ffc107;
+            font-size: 0.9rem;
+        }
+
+        .game-price {
+            text-align: right;
+        }
+
+        .price-original {
+            text-decoration: line-through;
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        .price-current {
+            color: var(--steam-green);
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+
+        .price-free {
+            color: var(--steam-green);
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .price-discount {
+            background: var(--steam-green);
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            font-size: 0.85rem;
+            margin-right: 0.5rem;
+        }
+
+        /* 加载更多按钮 */
+        .load-more {
+            text-align: center;
+            margin: 2rem 0 3rem 0;
+        }
+
+        .btn-load-more {
+            background: var(--steam-light-bg);
+            color: white;
+            border: none;
+            padding: 1rem 3rem;
+            font-size: 1.1rem;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .btn-load-more:hover {
+            background: var(--steam-blue);
+            transform: scale(1.05);
+        }
+
+        /* 页脚 */
+        .footer {
+            background: var(--steam-dark-bg);
+            padding: 2rem 0;
+            text-align: center;
+            margin-top: 3rem;
+            border-top: 3px solid var(--steam-light-bg);
+        }
+
+        /* 搜索框 */
+        .search-box {
+            max-width: 400px;
+        }
+
+        .search-box input {
+            background: var(--steam-card-bg);
+            border: 1px solid var(--steam-light-bg);
+            color: white;
+        }
+
+        .search-box input::placeholder {
+            color: #888;
+        }
+
+        .search-box input:focus {
+            background: var(--steam-hover);
+            border-color: var(--steam-blue);
+            color: white;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .carousel-item {
+                height: 300px;
+            }
+
+            .carousel-overlay h2 {
+                font-size: 1.5rem;
+            }
+
+            .games-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-controller"></i> 游戏社区商城
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/">商店</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="/community" id="communityDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            社区
+                        </a>
+                        <ul class="dropdown-menu community-dropdown" aria-labelledby="communityDropdown" id="communityMenu">
+                            <li><a class="dropdown-item" href="/community"><i class="bi bi-house-door"></i> 社区首页</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li class="dropdown-item-text text-muted small">加载中...</li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#library">游戏库</a>
+                    </li>
+                </ul>
+                <form class="d-flex search-box">
+                    <input class="form-control" type="search" placeholder="搜索游戏..." id="searchInput">
+                </form>
+                <ul class="navbar-nav ms-3">
+                    <li class="nav-item" id="loginNav">
+                        <a class="nav-link" href="/login">登录</a>
+                    </li>
+                    <li class="nav-item" id="registerNav">
+                        <a class="nav-link" href="/register">注册</a>
+                    </li>
+                    <li class="nav-item dropdown d-none" id="userDropdownNav">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle"></i> <span id="usernameNav"></span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end user-dropdown">
+                            <li><a class="dropdown-item" href="/profile"><i class="bi bi-person"></i> 个人主页</a></li>
+                            <li><a class="dropdown-item" href="/wishlist"><i class="bi bi-heart"></i> 愿望单</a></li>
+                            <li><a class="dropdown-item" href="/cart"><i class="bi bi-cart"></i> 购物车</a></li>
+                            <li><a class="dropdown-item" href="/wallet"><i class="bi bi-wallet2"></i> 钱包</a></li>
+                            <li><a class="dropdown-item" href="/messages"><i class="bi bi-envelope"></i> 消息</a></li>
+                            <li><a class="dropdown-item" href="/friends"><i class="bi bi-people"></i> 好友</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" onclick="logout(event)"><i class="bi bi-box-arrow-right"></i> 退出登录</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- 轮播大图 -->
+        <div id="featuredCarousel" class="carousel slide hero-carousel" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#featuredCarousel" data-bs-slide-to="0" class="active"></button>
+                <button type="button" data-bs-target="#featuredCarousel" data-bs-slide-to="1"></button>
+                <button type="button" data-bs-target="#featuredCarousel" data-bs-slide-to="2"></button>
+                <button type="button" data-bs-target="#featuredCarousel" data-bs-slide-to="3"></button>
+            </div>
+            <div class="carousel-inner" id="carouselContent">
+                <!-- 轮播内容将通过JS动态加载 -->
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#featuredCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#featuredCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </button>
+        </div>
+
+        <!-- 分类标签 -->
+        <ul class="nav category-tabs" id="categoryTabs">
+            <li class="nav-item">
+                <a class="nav-link active" href="#" data-category="all">全部游戏</a>
+            </li>
+            <!-- 分类将动态加载 -->
+        </ul>
+
+        <!-- 游戏网格 -->
+        <div class="games-grid" id="gamesGrid">
+            <!-- 游戏卡片将通过JS动态加载 -->
+        </div>
+
+        <!-- 加载更多 -->
+        <div class="load-more">
+            <button class="btn btn-load-more" id="loadMoreBtn">
+                <i class="bi bi-arrow-down-circle"></i> 加载更多游戏
+            </button>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 游戏社区商城. 所有权利保留.</p>
+            <p>
+                <a href="#about" class="text-decoration-none text-light mx-2">关于我们</a> |
+                <a href="#contact" class="text-decoration-none text-light mx-2">联系我们</a> |
+                <a href="#terms" class="text-decoration-none text-light mx-2">服务条款</a>
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentPage = 0;
+        let currentCategory = null;
+        const pageSize = 12;
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            checkLoginStatus();
+            loadFeaturedGames();
+            loadCategories();  // 加载分类标签
+            loadGames();
+            initEventListeners();
+            loadCommunityMenu();  // 加载社区板块菜单
+        });
+
+        // 检查登录状态
+        async function checkLoginStatus() {
+            try {
+                const response = await fetch('/api/auth/current');
+                const data = await response.json();
+                
+                if (data.code === 200) {
+                    // 已登录，显示用户下拉菜单
+                    document.getElementById('loginNav').classList.add('d-none');
+                    document.getElementById('registerNav').classList.add('d-none');
+                    document.getElementById('userDropdownNav').classList.remove('d-none');
+                    document.getElementById('usernameNav').textContent = data.data.username;
+                    
+                    // 如果是管理员,添加"管理系统"链接
+                    if (data.data.role === 'ADMIN') {
+                        const userDropdownMenu = document.querySelector('#userDropdownNav .dropdown-menu');
+                        
+                        // 检查是否已添加,避免重复
+                        if (!document.getElementById('adminMenuItem')) {
+                            const divider = document.createElement('li');
+                            divider.innerHTML = '<hr class="dropdown-divider">';
+                            
+                            const adminMenuItem = document.createElement('li');
+                            adminMenuItem.id = 'adminMenuItem';
+                            adminMenuItem.innerHTML = '<a class="dropdown-item" href="/admin"><i class="bi bi-gear-fill"></i> 管理系统</a>';
+                            
+                            // 找到最后一个分隔线,在它之前插入
+                            const lastDivider = userDropdownMenu.querySelector('hr.dropdown-divider');
+                            if (lastDivider && lastDivider.parentElement) {
+                                userDropdownMenu.insertBefore(divider, lastDivider.parentElement);
+                                userDropdownMenu.insertBefore(adminMenuItem, divider);
+                            }
+                        }
+                    }
+                } else {
+                    // 未登录，显示登录/注册
+                    document.getElementById('loginNav').classList.remove('d-none');
+                    document.getElementById('registerNav').classList.remove('d-none');
+                    document.getElementById('userDropdownNav').classList.add('d-none');
+                    
+                    // 移除管理员菜单项
+                    const adminMenuItem = document.getElementById('adminMenuItem');
+                    if (adminMenuItem) {
+                        const prevDivider = adminMenuItem.previousElementSibling;
+                        if (prevDivider) prevDivider.remove();
+                        adminMenuItem.remove();
+                    }
+                }
+            } catch (error) {
+                console.error('检查登录状态失败:', error);
+                // 出错时显示登录/注册
+                document.getElementById('loginNav').classList.remove('d-none');
+                document.getElementById('registerNav').classList.remove('d-none');
+                document.getElementById('userDropdownNav').classList.add('d-none');
+                
+                // 移除管理员菜单项
+                const adminMenuItem = document.getElementById('adminMenuItem');
+                if (adminMenuItem) {
+                    const prevDivider = adminMenuItem.previousElementSibling;
+                    if (prevDivider) prevDivider.remove();
+                    adminMenuItem.remove();
+                }
+            }
+        }
+
+        // 退出登录
+        async function logout(event) {
+            event.preventDefault();
+            if (confirm('确定要退出登录吗？')) {
+                try {
+                    await fetch('/api/auth/logout', { method: 'POST' });
+                    window.location.reload();
+                } catch (error) {
+                    console.error('退出登录失败:', error);
+                }
+            }
+        }
+
+        // 加载精选游戏到轮播图
+        async function loadFeaturedGames() {
+            try {
+                // 从Banner API加载轮播图
+                const response = await fetch('/api/banners/type/HOME');
+                const data = await response.json();
+                
+                if (data.code === 200 && data.data && data.data.length > 0) {
+                    const carouselContent = document.getElementById('carouselContent');
+                    const carouselIndicators = document.querySelector('#featuredCarousel .carousel-indicators');
+                    
+                    // 生成轮播图内容
+                    carouselContent.innerHTML = data.data.map((banner, index) => `
+                        <div class="carousel-item ${index === 0 ? 'active' : ''}" 
+                             ${banner.linkUrl ? `onclick="window.location.href='${banner.linkUrl}'" style="cursor: pointer;"` : ''}>
+                            <img src="${banner.imageUrl}" alt="${banner.title}" 
+                                 onerror="this.src='https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1920&h=600&fit=crop'">
+                            <div class="carousel-overlay">
+                                <h2>${banner.title}</h2>
+                                ${banner.description ? `<p>${banner.description}</p>` : ''}
+                            </div>
+                        </div>
+                    `).join('');
+                    
+                    // 生成指示器
+                    carouselIndicators.innerHTML = data.data.map((banner, index) => `
+                        <button type="button" data-bs-target="#featuredCarousel" data-bs-slide-to="${index}" 
+                                ${index === 0 ? 'class="active"' : ''}></button>
+                    `).join('');
+                } else {
+                    // 如果没有轮播图,显示默认内容
+                    const carouselContent = document.getElementById('carouselContent');
+                    carouselContent.innerHTML = `
+                        <div class="carousel-item active">
+                            <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1920&h=600&fit=crop" alt="默认轮播图">
+                            <div class="carousel-overlay">
+                                <h2>欢迎来到游戏社区商城</h2>
+                                <p>探索精彩的游戏世界</p>
+                            </div>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('加载轮播图失败:', error);
+            }
+        }
+
+        // 加载分类标签
+        async function loadCategories() {
+            try {
+                const response = await fetch('/api/categories');
+                const data = await response.json();
+                
+                if (data.code === 200 && data.data) {
+                    const categoryTabs = document.getElementById('categoryTabs');
+                    
+                    // 只保留"全部游戏"标签
+                    categoryTabs.innerHTML = `
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#" data-category="all">全部游戏</a>
+                        </li>
+                    `;
+                    
+                    // 添加动态分类标签
+                    data.data.forEach(category => {
+                        if (category.status === 'ACTIVE') {
+                            const li = document.createElement('li');
+                            li.className = 'nav-item';
+                            li.innerHTML = `<a class="nav-link" href="#" data-category="${category.id}">${category.name}</a>`;
+                            categoryTabs.appendChild(li);
+                        }
+                    });
+                    
+                    // 重新绑定分类点击事件
+                    initCategoryTabsEvent();
+                }
+            } catch (error) {
+                console.error('加载分类失败:', error);
+            }
+        }
+        
+        // 初始化分类标签点击事件
+        function initCategoryTabsEvent() {
+            document.querySelectorAll('#categoryTabs .nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // 移除所有active类
+                    document.querySelectorAll('#categoryTabs .nav-link').forEach(l => l.classList.remove('active'));
+                    // 添加active类到当前点击的链接
+                    this.classList.add('active');
+                    
+                    const category = this.getAttribute('data-category');
+                    currentCategory = category === 'all' ? null : parseInt(category);
+                    currentPage = 0;
+                    loadGames();
+                });
+            });
+        }
+        
+        // 加载游戏列表
+        async function loadGames(append = false) {
+            try {
+                let url, response, data;
+                
+                if (currentCategory) {
+                    // 使用新的分类查询API(支持多对多)
+                    url = `/api/games/category/${currentCategory}`;
+                    response = await fetch(url);
+                    data = await response.json();
+                    
+                    if (data.code === 200 && data.data) {
+                        // 手动分页
+                        const start = currentPage * pageSize;
+                        const end = start + pageSize;
+                        const pagedGames = data.data.slice(start, end);
+                        
+                        const gamesGrid = document.getElementById('gamesGrid');
+                        const gamesHTML = pagedGames.map(game => createGameCard(game)).join('');
+                        
+                        if (append) {
+                            gamesGrid.innerHTML += gamesHTML;
+                        } else {
+                            gamesGrid.innerHTML = gamesHTML;
+                        }
+                        
+                        // 如果没有更多游戏，隐藏加载更多按钮
+                        if (end >= data.data.length) {
+                            document.getElementById('loadMoreBtn').style.display = 'none';
+                        } else {
+                            document.getElementById('loadMoreBtn').style.display = 'inline-block';
+                        }
+                    }
+                } else {
+                    // 加载所有游戏(原有逻辑)
+                    url = `/api/games?page=${currentPage}&size=${pageSize}`;
+                    response = await fetch(url);
+                    data = await response.json();
+                    
+                    if (data.code === 200 && data.data) {
+                        const gamesGrid = document.getElementById('gamesGrid');
+                        const gamesHTML = data.data.map(game => createGameCard(game)).join('');
+                        
+                        if (append) {
+                            gamesGrid.innerHTML += gamesHTML;
+                        } else {
+                            gamesGrid.innerHTML = gamesHTML;
+                        }
+
+                        // 如果返回的游戏数少于pageSize，隐藏加载更多按钮
+                        if (data.data.length < pageSize) {
+                            document.getElementById('loadMoreBtn').style.display = 'none';
+                        } else {
+                            document.getElementById('loadMoreBtn').style.display = 'inline-block';
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('加载游戏失败:', error);
+            }
+        }
+
+        // 创建游戏卡片HTML
+        function createGameCard(game) {
+            const tags = game.tags ? game.tags.split(',').slice(0, 3) : [];
+            // 将评分转换为5分制(假设数据库是10分制)
+            const rating = game.rating ? (game.rating > 5 ? game.rating / 2 : game.rating) : 0;
+            const fullStars = Math.floor(rating);
+            const emptyStars = Math.max(0, 5 - fullStars); // 确保不为负数
+            const stars = '★'.repeat(fullStars) + '☆'.repeat(emptyStars);
+            
+            let priceHTML = '';
+            if (game.price === 0) {
+                priceHTML = '<div class="price-free">免费畅玩</div>';
+            } else if (game.discountPrice) {
+                const discount = Math.round((1 - game.discountPrice / game.price) * 100);
+                priceHTML = `
+                    <div>
+                        <span class="price-discount">-${discount}%</span>
+                        <div class="price-original">¥${game.price}</div>
+                        <div class="price-current">¥${game.discountPrice}</div>
+                    </div>
+                `;
+            } else {
+                priceHTML = `<div class="price-current">¥${game.price}</div>`;
+            }
+
+            return `
+                <div class="game-card" onclick="viewGame(${game.id})">
+                    <img src="${game.imageUrl || 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&h=225&fit=crop'}" 
+                         alt="${game.name}" class="game-card-image">
+                    <div class="game-card-body">
+                        <div class="game-card-title">${game.name}</div>
+                        <div class="game-tags">
+                            ${tags.map(tag => `<span class="game-tag">${tag}</span>`).join('')}
+                        </div>
+                        <div class="game-card-description">${game.description}</div>
+                        <div class="game-card-footer">
+                            <div>
+                                <div class="game-rating">${stars}</div>
+                                <small>${game.ratingCount || 0} 评价</small>
+                            </div>
+                            <div class="game-price">
+                                ${priceHTML}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 初始化事件监听器
+        function initEventListeners() {
+            // 分类切换事件在loadCategories中动态绑定
+
+            // 加载更多
+            document.getElementById('loadMoreBtn').addEventListener('click', function() {
+                currentPage++;
+                loadGames(true);
+            });
+
+            // 搜索功能
+            let searchTimeout;
+            document.getElementById('searchInput').addEventListener('input', function(e) {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    const keyword = e.target.value.trim();
+                    if (keyword) {
+                        searchGames(keyword);
+                    } else {
+                        currentPage = 0;
+                        loadGames();
+                    }
+                }, 500);
+            });
+        }
+
+        // 搜索游戏
+        async function searchGames(keyword) {
+            try {
+                const response = await fetch(`/api/games/search?keyword=${encodeURIComponent(keyword)}&page=0&size=${pageSize}`);
+                const data = await response.json();
+                
+                if (data.code === 200 && data.data) {
+                    const gamesGrid = document.getElementById('gamesGrid');
+                    gamesGrid.innerHTML = data.data.map(game => createGameCard(game)).join('');
+                    document.getElementById('loadMoreBtn').style.display = 'none';
+                }
+            } catch (error) {
+                console.error('搜索失败:', error);
+            }
+        }
+
+        // 查看游戏详情
+        function viewGame(gameId) {
+            window.location.href = `/game/${gameId}`;
+        }
+
+        // 加载社区板块菜单
+        async function loadCommunityMenu() {
+            try {
+                const response = await fetch('/api/community/sections');
+                const data = await response.json();
+                
+                if (data.code === 200 && data.data) {
+                    const menu = document.getElementById('communityMenu');
+                    
+                    // 构建菜单HTML
+                    let menuHTML = `
+                        <li><a class="dropdown-item" href="/community"><i class="bi bi-house-door"></i> 社区首页</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/forum.html"><i class="bi bi-chat-dots"></i> 讨论广场</a></li>
+                    `;
+                    
+                    // 添加其他板块(过滤掉重复的讨论广场)
+                    const sections = data.data.filter(section => section.name !== '讨论广场');
+                    sections.forEach(section => {
+                        const icon = section.icon || 'bi-chat-square-text';
+                        menuHTML += `
+                            <li>
+                                <a class="dropdown-item" href="/community/section/${section.id}">
+                                    <i class="${icon}"></i> ${section.name}
+                                </a>
+                            </li>
+                        `;
+                    });
+                    
+                    menu.innerHTML = menuHTML;
+                } else {
+                    // 如果加载失败,显示基本菜单
+                    const menu = document.getElementById('communityMenu');
+                    menu.innerHTML = `
+                        <li><a class="dropdown-item" href="/community"><i class="bi bi-house-door"></i> 社区首页</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/forum.html"><i class="bi bi-chat-dots"></i> 讨论广场</a></li>
+                    `;
+                }
+            } catch (error) {
+                console.error('加载社区板块菜单失败:', error);
+                // 加载失败时显示基本菜单
+                const menu = document.getElementById('communityMenu');
+                menu.innerHTML = `
+                    <li><a class="dropdown-item" href="/community"><i class="bi bi-house-door"></i> 社区首页</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="/forum.html"><i class="bi bi-chat-dots"></i> 讨论广场</a></li>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${game.name} + ' - 游戏详情'">游戏详情</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --steam-dark-bg: #1b2838;
+            --steam-light-bg: #2a475e;
+            --steam-card-bg: #1e2837;
+            --steam-hover: #16202d;
+            --steam-blue: #66c0f4;
+            --steam-green: #5cb85c;
+            --steam-text: #c7d5e0;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1b2838 0%, #2a475e 100%);
+            color: var(--steam-text);
+            font-family: 'Arial', 'Microsoft YaHei', sans-serif;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: var(--steam-dark-bg);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            padding: 1rem 0;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--steam-blue) !important;
+        }
+
+        .nav-link {
+            color: var(--steam-text) !important;
+            margin: 0 0.5rem;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover {
+            color: var(--steam-blue) !important;
+        }
+
+        .game-header {
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .game-title {
+            font-size: 3rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .game-main-image {
+            width: 100%;
+            height: 500px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
+            margin-bottom: 2rem;
+        }
+
+        .info-section {
+            background: var(--steam-card-bg);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--steam-blue);
+        }
+
+        .game-description {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--steam-text);
+            text-align: justify;
+        }
+
+        .game-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .game-tag {
+            background: var(--steam-light-bg);
+            color: var(--steam-blue);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .game-tag:hover {
+            background: var(--steam-blue);
+            color: white;
+            cursor: pointer;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .info-label {
+            font-size: 0.9rem;
+            color: #888;
+            text-transform: uppercase;
+        }
+
+        .info-value {
+            font-size: 1.2rem;
+            color: white;
+            font-weight: 500;
+        }
+
+        .purchase-box {
+            background: var(--steam-card-bg);
+            border-radius: 8px;
+            padding: 2rem;
+            position: sticky;
+            top: 2rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .price-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .price-label {
+            font-size: 1rem;
+            color: #888;
+            margin-bottom: 0.5rem;
+        }
+
+        .price-original {
+            text-decoration: line-through;
+            color: #888;
+            font-size: 1.2rem;
+        }
+
+        .price-current {
+            color: var(--steam-green);
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+
+        .price-discount {
+            background: var(--steam-green);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .price-free {
+            color: var(--steam-green);
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .rating-box {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: var(--steam-hover);
+            border-radius: 4px;
+        }
+
+        .rating-stars {
+            color: #ffc107;
+            font-size: 1.5rem;
+        }
+
+        .rating-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .rating-score {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .rating-count {
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        .btn-purchase {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+            background: var(--steam-green);
+            border: none;
+            color: white;
+            border-radius: 4px;
+            transition: all 0.3s;
+            margin-bottom: 1rem;
+        }
+
+        .btn-purchase:hover {
+            background: #4a9d4a;
+            transform: scale(1.02);
+        }
+
+        .btn-wishlist {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1rem;
+            background: transparent;
+            border: 2px solid var(--steam-text);
+            color: var(--steam-text);
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .btn-wishlist:hover {
+            background: var(--steam-text);
+            color: var(--steam-dark-bg);
+        }
+
+        .system-requirements {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .requirement-column {
+            background: var(--steam-hover);
+            padding: 1.5rem;
+            border-radius: 4px;
+        }
+
+        .requirement-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--steam-blue);
+            margin-bottom: 1rem;
+        }
+
+        .requirement-text {
+            white-space: pre-line;
+            line-height: 1.8;
+            color: var(--steam-text);
+        }
+
+        .back-button {
+            background: var(--steam-light-bg);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            margin-bottom: 2rem;
+        }
+
+        .back-button:hover {
+            background: var(--steam-blue);
+        }
+
+        @media (max-width: 992px) {
+            .system-requirements {
+                grid-template-columns: 1fr;
+            }
+
+            .game-title {
+                font-size: 2rem;
+            }
+
+            .game-main-image {
+                height: 300px;
+            }
+        }
+
+        /* 用户下拉菜单样式 */
+        .user-dropdown {
+            background: var(--steam-card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .user-dropdown .dropdown-item {
+            color: var(--steam-text);
+            padding: 0.7rem 1.2rem;
+            transition: all 0.2s;
+        }
+
+        .user-dropdown .dropdown-item:hover {
+            background: var(--steam-hover);
+            color: var(--steam-blue);
+        }
+
+        .user-dropdown .dropdown-item i {
+            margin-right: 0.5rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .user-dropdown .dropdown-divider {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-controller"></i> 游戏社区商城
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">商店</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/community">社区</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#library">游戏库</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav" id="navbarLinks">
+                    <li class="nav-item" id="loginLink">
+                        <a class="nav-link" href="/#login" onclick="scrollToLogin(event)">登录</a>
+                    </li>
+                    <li class="nav-item" id="registerLink">
+                        <a class="nav-link" href="/#register" onclick="scrollToRegister(event)">注册</a>
+                    </li>
+                    <!-- 用户下拉菜单将动态插入这里 -->
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- 返回按钮 -->
+        <button class="back-button" onclick="window.location.href='/'">
+            <i class="bi bi-arrow-left"></i> 返回商店
+        </button>
+
+        <!-- 游戏标题 -->
+        <div class="game-header">
+            <h1 class="game-title" th:text="${game.name}">游戏名称</h1>
+        </div>
+
+        <div class="row">
+            <!-- 左侧内容区 -->
+            <div class="col-lg-8">
+                <!-- 主图 -->
+                <img th:src="${game.imageUrl}" 
+                     th:alt="${game.name}"
+                     class="game-main-image"
+                     onerror="this.src='https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&h=450&fit=crop'">
+
+                <!-- 游戏简介 -->
+                <div class="info-section">
+                    <h2 class="section-title">游戏简介</h2>
+                    <p class="game-description" th:text="${game.description}">游戏描述</p>
+                    
+                    <!-- 标签 -->
+                    <div class="game-tags" th:if="${game.tags}">
+                        <span class="game-tag" th:each="tag : ${game.tags.split(',')}" th:text="${tag}">标签</span>
+                    </div>
+                </div>
+
+                <!-- 游戏信息 -->
+                <div class="info-section">
+                    <h2 class="section-title">游戏信息</h2>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">开发商</div>
+                            <div class="info-value" th:text="${game.developer ?: '未知'}">开发商</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">发行商</div>
+                            <div class="info-value" th:text="${game.publisher ?: '未知'}">发行商</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">发售日期</div>
+                            <div class="info-value" th:text="${#temporals.format(game.releaseDate, 'yyyy-MM-dd')}">发售日期</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">下载次数</div>
+                            <div class="info-value" th:text="${#numbers.formatInteger(game.downloadCount ?: 0, 0, 'COMMA')}">下载次数</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 系统需求 -->
+                <div class="info-section" th:if="${game.systemRequirements}">
+                    <h2 class="section-title">系统需求</h2>
+                    <!-- 隐藏的JSON数据 -->
+                    <div id="systemRequirementsJson" style="display: none;" th:text="${game.systemRequirements}"></div>
+                    <!-- 格式化后的显示区域 -->
+                    <div class="system-requirements" id="systemRequirementsDisplay">
+                        <div class="requirement-column">
+                            <div class="requirement-title">系统要求</div>
+                            <div class="requirement-text" id="requirementContent">
+                                加载中...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧购买区 -->
+            <div class="col-lg-4">
+                <div class="purchase-box">
+                    <!-- 评分 -->
+                    <div class="rating-box">
+                        <div class="rating-stars">
+                            <span th:each="i : ${#numbers.sequence(1, 5)}">
+                                <i th:class="${i <= game.rating} ? 'bi bi-star-fill' : 'bi bi-star'"></i>
+                            </span>
+                        </div>
+                        <div class="rating-text">
+                            <div class="rating-score">
+                                <span th:text="${game.rating}">4.5</span> / 5.0
+                            </div>
+                            <div class="rating-count">
+                                <span th:text="${#numbers.formatInteger(game.ratingCount ?: 0, 0, 'COMMA')}">0</span> 条评价
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 价格 -->
+                    <div class="price-container">
+                        <div class="price-label">购买此游戏</div>
+                        
+                        <!-- 免费游戏 -->
+                        <div th:if="${game.price == 0}">
+                            <div class="price-free">免费畅玩</div>
+                        </div>
+                        
+                        <!-- 折扣游戏 -->
+                        <div th:if="${game.price > 0 && game.discountPrice != null}">
+                            <div class="price-discount">
+                                -<span th:text="${#numbers.formatInteger((1 - game.discountPrice / game.price) * 100, 0)}">30</span>%
+                            </div>
+                            <div class="price-original">
+                                ¥<span th:text="${#numbers.formatDecimal(game.price, 0, 2)}">0.00</span>
+                            </div>
+                            <div class="price-current">
+                                ¥<span th:text="${#numbers.formatDecimal(game.discountPrice, 0, 2)}">0.00</span>
+                            </div>
+                        </div>
+                        
+                        <!-- 普通付费游戏 -->
+                        <div th:if="${game.price > 0 && game.discountPrice == null}">
+                            <div class="price-current">
+                                ¥<span th:text="${#numbers.formatDecimal(game.price, 0, 2)}">0.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 购买按钮 -->
+                    <button class="btn btn-purchase" onclick="purchaseGame()">
+                        <i class="bi bi-cart-plus"></i>
+                        <span th:text="${game.price == 0} ? '开始游戏' : '加入购物车'">加入购物车</span>
+                    </button>
+
+                    <!-- 愿望单按钮 -->
+                    <button class="btn btn-wishlist" onclick="addToWishlist()">
+                        <i class="bi bi-heart"></i> 添加到愿望单
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const gameId = /*[[${game.id}]]*/ 0;
+        const gameName = /*[[${game.name}]]*/ '';
+        const gamePrice = /*[[${game.price}]]*/ 0;
+
+        // 检查登录状态
+        async function checkLoginStatus() {
+            const token = getToken();
+            if (!token) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/auth/current', {
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+                const result = await response.json();
+                
+                if (result.code === 200 && result.data) {
+                    // 隐藏登录/注册链接
+                    const loginLink = document.getElementById('loginLink');
+                    const registerLink = document.getElementById('registerLink');
+                    if (loginLink) loginLink.style.display = 'none';
+                    if (registerLink) registerLink.style.display = 'none';
+                    
+                    // 创建用户下拉菜单
+                    const navbarLinks = document.getElementById('navbarLinks');
+                    if (!document.getElementById('userInfo')) {
+                        const userInfo = document.createElement('li');
+                        userInfo.id = 'userInfo';
+                        userInfo.className = 'nav-item dropdown';
+                        
+                        const isAdmin = result.data.role === 'ADMIN';
+                        const adminMenuItem = isAdmin ? `
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/admin"><i class="bi bi-gear-fill"></i> 管理系统</a></li>
+                        ` : '';
+                        
+                        userInfo.innerHTML = `
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle"></i> ${result.data.username}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end user-dropdown">
+                                <li><a class="dropdown-item" href="/profile"><i class="bi bi-person"></i> 个人主页</a></li>
+                                <li><a class="dropdown-item" href="/wishlist"><i class="bi bi-heart"></i> 愿望单</a></li>
+                                <li><a class="dropdown-item" href="/cart"><i class="bi bi-cart"></i> 购物车</a></li>
+                                <li><a class="dropdown-item" href="/wallet"><i class="bi bi-wallet2"></i> 钱包</a></li>
+                                <li><a class="dropdown-item" href="/messages"><i class="bi bi-envelope"></i> 消息</a></li>
+                                <li><a class="dropdown-item" href="/friends"><i class="bi bi-people"></i> 好友</a></li>
+                                ${adminMenuItem}
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#" onclick="logout(event); return false;">
+                                    <i class="bi bi-box-arrow-right"></i> 退出登录
+                                </a></li>
+                            </ul>
+                        `;
+                        navbarLinks.appendChild(userInfo);
+                    }
+                }
+            } catch (error) {
+                console.error('检查登录状态失败:', error);
+            }
+        }
+
+        // 获取token (优先从cookie获取)
+        function getToken() {
+            // 优先从cookie获取SESSION_TOKEN
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                const [name, value] = cookie.trim().split('=');
+                if (name === 'SESSION_TOKEN') {
+                    return value;
+                }
+            }
+            // 如果cookie中没有,尝试从localStorage获取
+            return localStorage.getItem('token');
+        }
+
+        // 退出登录
+        function logout(event) {
+            if (event) event.preventDefault();
+            
+            // 清除token
+            document.cookie = 'SESSION_TOKEN=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+            localStorage.removeItem('token');
+            
+            // 跳转到首页
+            window.location.href = '/';
+        }
+
+        // 滚动到登录区域
+        function scrollToLogin(event) {
+            event.preventDefault();
+            window.location.href = '/#login';
+        }
+
+        // 滚动到注册区域
+        function scrollToRegister(event) {
+            event.preventDefault();
+            window.location.href = '/#register';
+        }
+
+        function purchaseGame() {
+            if (gamePrice === 0) {
+                alert('免费游戏，开始下载！\n游戏ID: ' + gameId);
+            } else {
+                alert('已添加到购物车！\n游戏: ' + gameName + '\n价格: ¥' + gamePrice);
+            }
+        }
+
+        function addToWishlist() {
+            alert('已添加到愿望单！\n游戏: ' + gameName);
+        }
+
+        // 格式化系统要求
+        function formatSystemRequirements() {
+            const jsonElement = document.getElementById('systemRequirementsJson');
+            const contentElement = document.getElementById('requirementContent');
+            
+            if (!jsonElement || !contentElement) {
+                return;
+            }
+            
+            const jsonText = jsonElement.textContent.trim();
+            
+            // 如果不是JSON格式(纯文本),直接显示
+            if (!jsonText.startsWith('{') && !jsonText.startsWith('[')) {
+                contentElement.innerHTML = jsonText.replace(/\n/g, '<br/>');
+                return;
+            }
+            
+            try {
+                const requirements = JSON.parse(jsonText);
+                
+                // 中文字段映射
+                const fieldNames = {
+                    'os': '操作系统',
+                    'processor': '处理器',
+                    'cpu': '处理器',
+                    'memory': '内存',
+                    'ram': '内存',
+                    'graphics': '显卡',
+                    'gpu': '显卡',
+                    'directx': 'DirectX',
+                    'storage': '存储空间',
+                    'disk': '存储空间',
+                    'network': '网络',
+                    'sound': '声卡',
+                    'additional': '附加说明'
+                };
+                
+                let html = '<div style="line-height: 2;">';
+                
+                for (const [key, value] of Object.entries(requirements)) {
+                    const displayName = fieldNames[key.toLowerCase()] || key;
+                    html += `<div style="margin-bottom: 0.8rem;">`;
+                    html += `<strong style="color: var(--steam-blue); display: inline-block; width: 100px;">${displayName}:</strong> `;
+                    html += `<span style="color: var(--steam-text);">${value}</span>`;
+                    html += `</div>`;
+                }
+                
+                html += '</div>';
+                contentElement.innerHTML = html;
+            } catch (e) {
+                // JSON解析失败,显示原始文本
+                console.error('解析系统要求失败:', e);
+                contentElement.innerHTML = jsonText.replace(/\n/g, '<br/>');
+            }
+        }
+
+        // 页面加载时检查登录状态和格式化系统要求
+        document.addEventListener('DOMContentLoaded', function() {
+            checkLoginStatus();
+            formatSystemRequirements();
+        });
+        /*]]>*/
+    </script>
+</body>
+</html>
