@@ -1,0 +1,32 @@
+package com.gamestore.controller;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/simple")
+public class SimpleTestController {
+    
+    @GetMapping("/ping")
+    public Map<String, Object> ping() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", "success");
+        response.put("message", "Pong! Server is running");
+        response.put("timestamp", System.currentTimeMillis());
+        return response;
+    }
+    
+    @GetMapping("/info")
+    public Map<String, Object> info() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("application", "Game Community Store");
+        response.put("version", "1.0.0");
+        response.put("java_version", System.getProperty("java.version"));
+        response.put("spring_profile", "development");
+        return response;
+    }
+}

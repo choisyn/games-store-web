@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>调试页面</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+        }
+        .section {
+            background: #252526;
+            border: 1px solid #3c3c3c;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        h2 {
+            color: #4ec9b0;
+            margin-top: 0;
+        }
+        pre {
+            background: #1e1e1e;
+            border: 1px solid #3c3c3c;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .success { color: #4ec9b0; }
+        .error { color: #f48771; }
+        .info { color: #569cd6; }
+        button {
+            background: #0e639c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 3px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #1177bb;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 游戏商城调试页面</h1>
+
+    <div class="section">
+        <h2>1. API端点测试</h2>
+        <button onclick="testAPI('/api/games')">测试游戏列表API</button>
+        <button onclick="testAPI('/api/games/featured')">测试精选游戏API</button>
+        <button onclick="testAPI('/api/games/1')">测试单个游戏API</button>
+        <button onclick="testAPI('/api/categories')">测试分类API</button>
+        <pre id="apiResult">点击按钮测试API...</pre>
+    </div>
+
+    <div class="section">
+        <h2>2. 数据库连接测试</h2>
+        <div id="dbStatus">检查中...</div>
+    </div>
+
+    <div class="section">
+        <h2>3. 游戏数据统计</h2>
+        <div id="gameStats">加载中...</div>
+    </div>
+
+    <div class="section">
+        <h2>4. 首页跳转</h2>
+        <button onclick="window.location.href='/'">返回首页</button>
+    </div>
+
+    <script>
+        async function testAPI(url) {
+            const resultDiv = document.getElementById('apiResult');
+            resultDiv.innerHTML = '<span class="info">请求中...</span>';
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                resultDiv.innerHTML = `
+<span class="success">✅ 请求成功</span>
+URL: ${url}
+状态码: ${response.status}
+响应数据:
+${JSON.stringify(data, null, 2)}
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+<span class="error">❌ 请求失败</span>
+URL: ${url}
+错误信息: ${error.message}
+                `;
+            }
+        }
+
+        async function checkDatabase() {
+            try {
+                const response = await fetch('/api/games');
+                const data = await response.json();
+                
+                const dbStatus = document.getElementById('dbStatus');
+                if (data.code === 200) {
+                    dbStatus.innerHTML = `
+                        <span class="success">✅ 数据库连接正常</span><br>
+                        响应代码: ${data.code}<br>
+                        响应消息: ${data.message}
+                    `;
+                } else {
+                    dbStatus.innerHTML = `
+                        <span class="error">⚠️ API响应异常</span><br>
+                        响应代码: ${data.code}<br>
+                        响应消息: ${data.message}
+                    `;
+                }
+            } catch (error) {
+                const dbStatus = document.getElementById('dbStatus');
+                dbStatus.innerHTML = `
+                    <span class="error">❌ 数据库连接失败</span><br>
+                    错误信息: ${error.message}
+                `;
+            }
+        }
+
+        async function loadGameStats() {
+            try {
+                const [gamesRes, featuredRes, categoriesRes] = await Promise.all([
+                    fetch('/api/games?page=0&size=100'),
+                    fetch('/api/games/featured?page=0&size=100'),
+                    fetch('/api/categories')
+                ]);
+
+                const gamesData = await gamesRes.json();
+                const featuredData = await featuredRes.json();
+                const categoriesData = await categoriesRes.json();
+
+                const statsDiv = document.getElementById('gameStats');
+                statsDiv.innerHTML = `
+                    <span class="success">✅ 数据加载成功</span><br><br>
+                    📊 游戏总数: ${gamesData.data ? gamesData.data.length : 0}<br>
+                    ⭐ 精选游戏: ${featuredData.data ? featuredData.data.length : 0}<br>
+                    📁 分类数量: ${categoriesData.data ? categoriesData.data.length : 0}<br><br>
+                    ${gamesData.data && gamesData.data.length > 0 ? `
+                        <strong>游戏列表预览：</strong><br>
+                        ${gamesData.data.slice(0, 5).map(game => 
+                            `- ${game.name} (¥${game.price}, ${game.isFeatured ? '精选' : '普通'})`
+                        ).join('<br>')}
+                        ${gamesData.data.length > 5 ? '<br>...' : ''}
+                    ` : '<span class="error">⚠️ 没有找到游戏数据！</span>'}
+                `;
+            } catch (error) {
+                const statsDiv = document.getElementById('gameStats');
+                statsDiv.innerHTML = `
+                    <span class="error">❌ 加载失败</span><br>
+                    错误信息: ${error.message}
+                `;
+            }
+        }
+
+        // 页面加载时执行
+        window.onload = function() {
+            checkDatabase();
+            loadGameStats();
+        };
+    </script>
+</body>
+</html>
+
